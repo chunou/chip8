@@ -22,7 +22,7 @@ const uint8_t FONT[FONTSET_SIZE] = {
     0xF0, 0x80, 0xF0, 0x80, 0x80  // F
 };
 
-void init_chip8(struct Chip8 *chip8) {
+void init_chip8(Chip8 *chip8) {
     for (size_t i=0; i<FONTSET_SIZE; ++i) {
         chip8->memory[i + FONTSET_OFFSET] = FONT[i];
     }

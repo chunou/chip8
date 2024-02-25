@@ -11,12 +11,12 @@
 #define SCREEN_WIDTH 64
 #define SCREEN_HEIGHT 32
 
-struct Chip8 {
+typedef struct {
     uint8_t memory[RAM_SIZE];
     uint8_t screen[SCREEN_WIDTH][SCREEN_HEIGHT];
-};
+} Chip8;
 
-void init_chip8(struct Chip8 *chip8);
+void init_chip8(Chip8 *chip8);
 
 
 #endif // CHIP8_H__
