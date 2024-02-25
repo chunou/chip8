@@ -1,3 +1,9 @@
+# Chip8 Executable
+chip8
+
+# Editor settings
+.vscode/
+
 # Prerequisites
 *.d
 
