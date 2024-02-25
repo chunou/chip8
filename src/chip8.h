@@ -5,6 +5,9 @@
 
 #define RAM_SIZE 4096
 
+#define FONTSET_SIZE 80
+#define FONTSET_OFFSET 0x50
+
 struct Chip8 {
     uint8_t memory[RAM_SIZE];
 };
