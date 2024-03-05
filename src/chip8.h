@@ -18,6 +18,8 @@ typedef struct {
     uint8_t memory[RAM_SIZE];
     uint8_t screen[SCREEN_WIDTH][SCREEN_HEIGHT];
     uint16_t stack[STACK_SIZE];
+    uint8_t delay_timer;
+    uint8_t sound_timer;
 
 } Chip8;
 
