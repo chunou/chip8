@@ -1,5 +1,6 @@
 #include <stddef.h>
 #include <stdint.h>
+#include <stdio.h>
 
 #include "chip8.h"
 
@@ -23,8 +24,36 @@ const uint8_t FONT[FONTSET_SIZE] = {
 };
 
 void init_chip8(Chip8 *chip8) {
+    for (size_t i=0; i<RAM_SIZE; ++i) {
+        chip8->memory[i] = 0;
+    }
     for (size_t i=0; i<FONTSET_SIZE; ++i) {
         chip8->memory[i + FONTSET_OFFSET] = FONT[i];
     }
-    
+
+    for (size_t i=0; i<SCREEN_WIDTH; ++i) {
+        for (size_t j=0; j<SCREEN_HEIGHT; ++j) {
+            chip8->screen[i][j] = 0;
+        }
+    }
 }
+
+void draw_to_display(Chip8 *chip8, uint8_t vx, uint8_t vy, uint8_t n) {
+    uint8_t x = chip8->variable_register[vx] % SCREEN_WIDTH;
+    uint8_t y = chip8->variable_register[vy] % SCREEN_HEIGHT;
+
+    for (int yy = y; yy < y + n; ++yy) {
+        uint8_t byte = chip8->memory[chip8->I+yy];
+        for (int xx = x; xx < x + 8; ++xx) {
+            if (xx >= SCREEN_WIDTH) break;
+            uint8_t bit = 0b10000000 >> (xx-x);
+            uint8_t pixel = (byte & bit) >> (7-xx+x);
+            if (chip8->screen[xx][yy] == pixel) {
+                chip8->screen[xx][yy] ^= pixel;
+                chip8->variable_register[0x0F] = 1;
+            } else {
+                chip8->screen[xx][yy] = pixel;
+            }
+        }
+    }
+};

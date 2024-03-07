@@ -13,4 +13,6 @@ typedef struct {
 
 void init_display(Display* display);
 
+void compose_scene(Display *display, uint8_t *screen, int rows, int cols);
+
 #endif // DISPLAY_H__

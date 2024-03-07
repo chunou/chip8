@@ -14,16 +14,23 @@
 #define SCREEN_WIDTH 64
 #define SCREEN_HEIGHT 32
 
+#define VARIABLE_REGISTER_SIZE 16
+
 typedef struct {
     uint8_t memory[RAM_SIZE];
+    uint16_t index_register;
     uint8_t screen[SCREEN_WIDTH][SCREEN_HEIGHT];
     uint16_t stack[STACK_SIZE];
     uint8_t delay_timer;
     uint8_t sound_timer;
+    uint8_t variable_register[VARIABLE_REGISTER_SIZE];
+    uint16_t I;
 
 } Chip8;
 
 void init_chip8(Chip8 *chip8);
+
+void draw_to_display(Chip8 *chip8, uint8_t vx, uint8_t vy, uint8_t n);
 
 
 #endif // CHIP8_H__

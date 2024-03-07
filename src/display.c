@@ -20,3 +20,18 @@ void init_display(Display *display) {
         exit(1);
     }
 }
+
+void compose_scene(Display *display, uint8_t *screen, int width, int height) {
+    SDL_Rect rect;
+    rect.w = 10;
+    rect.h = 10;
+    for (int i=0; i<width; ++i) {
+        for (int j=0; j<height; ++j) {
+            rect.x = 10*i;
+            rect.y = 10*j;
+            if (screen[i*height + j] == 1) {
+                SDL_RenderFillRect(display->renderer, &rect);
+            }
+        }
+    }
+}

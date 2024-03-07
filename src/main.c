@@ -14,32 +14,40 @@ int main(int argc, char *argv[]) {
     init_chip8(&chip8);
     chip8.delay_timer = 60;
     chip8.sound_timer = 30;
+    chip8.memory[0] = 0x4F;
+    chip8.memory[1] = 0xA3;
+    chip8.index_register = 0;
+    chip8.I = FONTSET_OFFSET+55;
 
-    Display d;
-    init_display(&d);
-    SDL_SetRenderDrawColor(d.renderer, 0, 0, 0, 255);
-    SDL_RenderClear(d.renderer);
-    SDL_RenderPresent(d.renderer);
+    Display display;
+    init_display(&display);;
     bool quit = false;
     SDL_Event e;
-
-    struct timespec ts;
-    ts.tv_sec = 0;
-    ts.tv_nsec = 1000000000 / 60;
+    
+    draw_to_display(&chip8, 0, 0, 5);
+    // Enter the main loop of the emulator
     while (!quit) {
         while(SDL_PollEvent(&e) != 0) {
             if (e.type == SDL_QUIT) quit = true;
         }
-        if (chip8.delay_timer > 0 || chip8.sound_timer > 0) {
-            chip8.delay_timer = chip8.delay_timer ? chip8.delay_timer - 1 : 0;
-            chip8.sound_timer = chip8.sound_timer ? chip8.sound_timer - 1 : 0;
-            printf("Delay timer: %d\n", chip8.delay_timer);
-            printf("Sound timer: %d\n", chip8.sound_timer);
-            nanosleep(&ts, NULL);
-        }
+        // Clear Renderer
+        SDL_SetRenderDrawColor(display.renderer, 0, 0, 0, 255);
+        SDL_RenderClear(display.renderer);
+
+        // Do chip8 stuff here
+        
+
+        // Compose Scene
+        SDL_SetRenderDrawColor(display.renderer, 255, 255, 255, 0);
+        compose_scene(&display, &chip8.screen[0][0], SCREEN_WIDTH, SCREEN_HEIGHT);
+
+        // Present Renderer
+        SDL_RenderPresent(display.renderer);
     }
-    SDL_DestroyRenderer(d.renderer);
-    SDL_DestroyWindow(d.window);
+
+    // Cleanup
+    SDL_DestroyRenderer(display.renderer);
+    SDL_DestroyWindow(display.window);
     SDL_Quit();
 
     return (0);
