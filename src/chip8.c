@@ -1,6 +1,7 @@
 #include <stddef.h>
 #include <stdint.h>
 #include <stdio.h>
+#include <stdlib.h>
 
 #include "chip8.h"
 
@@ -27,10 +28,22 @@ void init_chip8(Chip8 *chip8) {
     for (size_t i=0; i<RAM_SIZE; ++i) {
         chip8->memory[i] = 0;
     }
+    chip8->index_register = 0;
+    clear_screen(chip8);
+    for (size_t i=0; i<STACK_SIZE; ++i) {
+        chip8->stack[i] = 0;
+    }
+    chip8->delay_timer = 0;
+    chip8->sound_timer = 0;
+    for (size_t i=0; i<VARIABLE_REGISTER_SIZE; ++i) {
+        chip8->variable_register[i] = 0;
+    }
+    chip8->I = 0;
+
+    // Load font
     for (size_t i=0; i<FONTSET_SIZE; ++i) {
         chip8->memory[i + FONTSET_OFFSET] = FONT[i];
     }
-    clear_screen(chip8);
 }
 
 int clear_screen(Chip8 *chip8) {
@@ -40,6 +53,21 @@ int clear_screen(Chip8 *chip8) {
         }
     }
     return 0;
+}
+
+uint16_t fetch_instruction(Chip8 *chip8) {
+    // Gets a 16 bit instruction from memory
+    // Does not perform any saftey checks.
+    // Instruction pointer can run off end of memory
+    if (chip8->I >= RAM_SIZE - 1) {
+        exit(1);
+    }
+    uint8_t lower_byte = chip8->memory[chip8->I++];
+    uint8_t upper_byte = chip8->memory[chip8->I++];
+    printf("In `fetch_instruction` found lb: %02X ub: %02X\n", lower_byte, upper_byte);
+    uint16_t instruction = (((uint16_t)lower_byte)<< 8) | upper_byte;
+    printf("In `fetch_instruction` found instruction: %04X\n", instruction);
+    return instruction;
 }
 
 void draw_to_display(Chip8 *chip8, uint8_t vx, uint8_t vy, uint8_t n) {
