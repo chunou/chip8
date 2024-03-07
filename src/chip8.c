@@ -39,6 +39,7 @@ void init_chip8(Chip8 *chip8) {
         chip8->variable_register[i] = 0;
     }
     chip8->I = 0;
+    chip8->pc = 0;
 
     // Load font
     for (size_t i=0; i<FONTSET_SIZE; ++i) {
