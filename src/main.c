@@ -53,6 +53,10 @@ int main(int argc, char *argv[]) {
             }
             break;
         
+        case 0x1:
+            // Jump instruction
+            break;
+        
         case 0xD:
             draw_to_display(&chip8, nibble1, nibble2, nibble3);
             break;
