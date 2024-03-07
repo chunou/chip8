@@ -29,7 +29,7 @@ typedef struct {
 } Chip8;
 
 void init_chip8(Chip8 *chip8);
-
+int clear_screen(Chip8 *chip8);
 void draw_to_display(Chip8 *chip8, uint8_t vx, uint8_t vy, uint8_t n);
 
 

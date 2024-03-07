@@ -30,12 +30,16 @@ void init_chip8(Chip8 *chip8) {
     for (size_t i=0; i<FONTSET_SIZE; ++i) {
         chip8->memory[i + FONTSET_OFFSET] = FONT[i];
     }
+    clear_screen(chip8);
+}
 
+int clear_screen(Chip8 *chip8) {
     for (size_t i=0; i<SCREEN_WIDTH; ++i) {
         for (size_t j=0; j<SCREEN_HEIGHT; ++j) {
             chip8->screen[i][j] = 0;
         }
     }
+    return 0;
 }
 
 void draw_to_display(Chip8 *chip8, uint8_t vx, uint8_t vy, uint8_t n) {
