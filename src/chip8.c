@@ -57,9 +57,6 @@ int clear_screen(Chip8 *chip8) {
 }
 
 uint16_t fetch_instruction(Chip8 *chip8) {
-    // Gets a 16 bit instruction from memory
-    // Does not perform any saftey checks.
-    // Instruction pointer can run off end of memory
     if (chip8->pc >= RAM_SIZE - 1) {
         exit(1);
     }
