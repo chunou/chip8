@@ -18,7 +18,6 @@ int main(int argc, char *argv[]) {
     chip8.memory[0] = 0xD0;
     chip8.memory[1] = 0x05;
     chip8.index_register = 0;
-    chip8.I = 0;
     chip8.I = FONTSET_OFFSET+35;
 
     Display display;
@@ -43,9 +42,8 @@ int main(int argc, char *argv[]) {
         uint8_t nibble1 = (instruction & (nibble_mask << 8)) >> 8;
         uint8_t nibble2 = (instruction & (nibble_mask << 4)) >> 4;
         uint8_t nibble3 = (instruction & (nibble_mask));
-        printf("n0: %X, n1: %X, n2: %X, n3: %X\n", nibble0, nibble1, nibble2, nibble3);
 
-        // Decode
+        // Decode & execute
         switch (nibble0) {
         case 0x0:
             if (instruction == 0x00E0) {
@@ -54,8 +52,29 @@ int main(int argc, char *argv[]) {
             break;
         
         case 0x1:
-            // Jump instruction
+            {
+                uint16_t loc = instruction & 0b0000111111111111;
+                chip8.pc = loc;
+            }
             break;
+
+        case 0x6:
+            {
+                uint8_t register_index = nibble1;
+                uint8_t register_value = (nibble2 << 4) | nibble3;
+                chip8.variable_register[register_index] = register_value;
+            }
+            break;
+        
+        case 0x7:
+            {
+                // This instruction does not care about overflow
+                uint8_t register_index = nibble1;
+                uint8_t value = (nibble2 << 4) | nibble3;
+                chip8.variable_register[register_index] += value;
+            }
+            break;
+        
         
         case 0xD:
             draw_to_display(&chip8, nibble1, nibble2, nibble3);
@@ -65,10 +84,8 @@ int main(int argc, char *argv[]) {
             printf("Fallthrough on instruction %04X\n", instruction);
             break;
         }
-            // Fetch instruction
-            // Decode instruction
-            // Execute instruction
 
+        chip8.pc = 0;
         // Compose Scene
         SDL_SetRenderDrawColor(display.renderer, 255, 255, 255, 0);
         compose_scene(&display, &chip8.screen[0][0], SCREEN_WIDTH, SCREEN_HEIGHT);

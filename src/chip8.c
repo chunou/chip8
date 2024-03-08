@@ -60,14 +60,12 @@ uint16_t fetch_instruction(Chip8 *chip8) {
     // Gets a 16 bit instruction from memory
     // Does not perform any saftey checks.
     // Instruction pointer can run off end of memory
-    if (chip8->I >= RAM_SIZE - 1) {
+    if (chip8->pc >= RAM_SIZE - 1) {
         exit(1);
     }
-    uint8_t lower_byte = chip8->memory[chip8->I++];
-    uint8_t upper_byte = chip8->memory[chip8->I++];
-    printf("In `fetch_instruction` found lb: %02X ub: %02X\n", lower_byte, upper_byte);
+    uint8_t lower_byte = chip8->memory[chip8->pc++];
+    uint8_t upper_byte = chip8->memory[chip8->pc++];
     uint16_t instruction = (((uint16_t)lower_byte)<< 8) | upper_byte;
-    printf("In `fetch_instruction` found instruction: %04X\n", instruction);
     return instruction;
 }
 
