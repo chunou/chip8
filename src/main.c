@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
+#include <unistd.h>
 
 
 #include <SDL.h>
@@ -13,19 +14,19 @@ int main(int argc, char *argv[]) {
 
     Chip8 chip8;
     init_chip8(&chip8);
-    chip8.delay_timer = 60;
-    chip8.sound_timer = 30;
-    chip8.memory[0] = 0xD0;
-    chip8.memory[1] = 0x05;
-    chip8.index_register = 0;
-    chip8.I = FONTSET_OFFSET+35;
-
+    chip8.pc = PROGRAM_START;
     Display display;
-    init_display(&display);;
+    init_display(&display);
     bool quit = false;
     SDL_Event e;
-    
-    draw_to_display(&chip8, 0, 0, 5);
+
+    FILE *fptr;
+    fptr = fopen("roms/3-corax+.ch8", "rd");
+    while (!feof(fptr)) {
+        size_t r = fread(&chip8.memory[PROGRAM_START], sizeof(chip8.memory), 1, fptr);
+    }
+    fclose(fptr);
+
     // Enter the main loop of the emulator
     while (!quit) {
         while(SDL_PollEvent(&e) != 0) {
@@ -42,12 +43,16 @@ int main(int argc, char *argv[]) {
         uint8_t nibble1 = (instruction & (nibble_mask << 8)) >> 8;
         uint8_t nibble2 = (instruction & (nibble_mask << 4)) >> 4;
         uint8_t nibble3 = (instruction & (nibble_mask));
+        printf("Found instruction %04X\n", instruction);
 
         // Decode & execute
         switch (nibble0) {
         case 0x0:
             if (instruction == 0x00E0) {
+                printf("Clearing screen\n");
                 clear_screen(&chip8);
+            } else if (instruction == 0x00EE) {
+                return_subrtn(&chip8);
             }
             break;
         
@@ -55,6 +60,36 @@ int main(int argc, char *argv[]) {
             {
                 uint16_t loc = instruction & 0b0000111111111111;
                 chip8.pc = loc;
+                printf("Jumping to location: %04X\n", loc);
+            }
+            break;
+        
+        case 0x2:
+            {
+                uint16_t mask = 0x0FFF;
+                uint16_t addr = instruction & mask;
+                call_subrtn(&chip8, addr);
+            }
+            break;
+        
+        case 0x3:
+            {
+                uint8_t val = (nibble2 << 4) | nibble3;
+                skip_if_eq(&chip8, nibble1, val);
+
+            }
+            break;
+        
+        case 0x4:
+            {
+                uint8_t val = (nibble2 << 4) | nibble3;
+                skip_if_neq(&chip8, nibble1, val);
+            }
+            break;
+        
+        case 0x5:
+            {
+                skip_if_xy_eq(&chip8, nibble1, nibble2);
             }
             break;
 
@@ -62,9 +97,11 @@ int main(int argc, char *argv[]) {
             {
                 uint8_t register_index = nibble1;
                 uint8_t register_value = (nibble2 << 4) | nibble3;
+                printf("Setting register V%X to %02X\n", register_index, register_value);
                 chip8.variable_register[register_index] = register_value;
             }
             break;
+    
         
         case 0x7:
             {
@@ -72,20 +109,70 @@ int main(int argc, char *argv[]) {
                 uint8_t register_index = nibble1;
                 uint8_t value = (nibble2 << 4) | nibble3;
                 chip8.variable_register[register_index] += value;
+            }   
+            break;
+        
+        case 0x8:
+            switch (nibble3) {
+            case 0x0:
+                set_xy(&chip8, nibble1, nibble2);
+                break;
+            case 0x1:
+                xy_or(&chip8, nibble1, nibble2);
+                break;
+            case 0x2:
+                xy_and(&chip8, nibble1, nibble2);
+                break;
+            case 0x3:
+                xy_xor(&chip8, nibble1, nibble2);
+                break;
+            case 0x4:
+                xy_add(&chip8, nibble1, nibble2);
+                break;
+            case 0x5:
+                xy_x_subtract_y(&chip8, nibble1, nibble2);
+                break;
+            case 0x6:
+                xy_shift_left(&chip8, nibble1, nibble2);
+                break;
+            case 0x7:
+                xy_y_subtract_x(&chip8, nibble1, nibble2);
+                break;
+            case 0xE:
+                xy_shift_right(&chip8, nibble1, nibble2);
+                break;
+            default:
+                break;
             }
             break;
         
+        case 0x9:
+            {
+                skip_if_xy_neq(&chip8, nibble1, nibble2);
+            }
+            break;
+        
+        case 0xA:
+            {
+                uint16_t index = instruction & 0x0FFF;
+                printf("setting index to %03X\n", index);
+                chip8.I = index;
+            }
+            break;
         
         case 0xD:
+            printf("Calling `draw_to_display`\n");
+            printf("Register V%X = %02X, Register V%X = %02X, Height = %d\n\n", 
+                nibble1, chip8.variable_register[nibble1],
+                nibble2, chip8.variable_register[nibble2], nibble3);
             draw_to_display(&chip8, nibble1, nibble2, nibble3);
             break;
         
         default:
             printf("Fallthrough on instruction %04X\n", instruction);
+            exit(1);
             break;
         }
-
-        chip8.pc = 0;
         // Compose Scene
         SDL_SetRenderDrawColor(display.renderer, 255, 255, 255, 0);
         compose_scene(&display, &chip8.screen[0][0], SCREEN_WIDTH, SCREEN_HEIGHT);
@@ -93,6 +180,10 @@ int main(int argc, char *argv[]) {
         // Present Renderer
         // Mabye we only do this if the screen has changed?
         SDL_RenderPresent(display.renderer);
+        
+        // Maybe wait here?
+        usleep(1000000/10);
+
     }
 
     // Cleanup
