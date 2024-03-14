@@ -36,7 +36,7 @@ void init_chip8(Chip8 *chip8) {
     chip8->delay_timer = 0;
     chip8->sound_timer = 0;
     for (size_t i=0; i<VARIABLE_REGISTER_SIZE; ++i) {
-        chip8->variable_register[i] = 0;
+        chip8->V[i] = 0;
     }
     chip8->I = 0;
     chip8->pc = 0;
@@ -67,9 +67,9 @@ uint16_t fetch_instruction(Chip8 *chip8) {
 }
 
 void draw_to_display(Chip8 *chip8, uint8_t vx, uint8_t vy, uint8_t n) {
-    uint8_t xloc = chip8->variable_register[vx] % SCREEN_WIDTH;
-    uint8_t yloc = chip8->variable_register[vy] % SCREEN_HEIGHT;
-    chip8->variable_register[0xF] = 0;
+    uint8_t xloc = chip8->V[vx] % SCREEN_WIDTH;
+    uint8_t yloc = chip8->V[vy] % SCREEN_HEIGHT;
+    chip8->V[0xF] = 0;
     for (int row = 0; row < n; ++row) {
         if (row + yloc >= SCREEN_HEIGHT) break;
         uint8_t sprite_row = chip8->memory[chip8->I + row];
@@ -79,7 +79,7 @@ void draw_to_display(Chip8 *chip8, uint8_t vx, uint8_t vy, uint8_t n) {
             uint8_t flag = (sprite_row & mask) >> (7 - col);
             if (chip8->screen[xloc + col][yloc + row] == 1 && flag == 1) {
                 chip8->screen[xloc + col][yloc + row] = 0;
-                chip8->variable_register[0xF] = 1;
+                chip8->V[0xF] = 1;
             } else {
                 chip8->screen[xloc + col][yloc + row] = flag;
             }
@@ -90,25 +90,25 @@ void draw_to_display(Chip8 *chip8, uint8_t vx, uint8_t vy, uint8_t n) {
 };
 
 void skip_if_eq(Chip8 *chip8, uint8_t x, uint8_t n) {
-    if (chip8->variable_register[x] == n) {
+    if (chip8->V[x] == n) {
         chip8->pc += 2;
     }
 }
 
 void skip_if_neq(Chip8 *chip8, uint8_t x, uint8_t n) {
-    if (chip8->variable_register[x] != n) {
+    if (chip8->V[x] != n) {
         chip8->pc += 2;
     }
 }
 
 void skip_if_xy_eq(Chip8 *chip8, uint8_t x, uint8_t y) {
-    if (chip8->variable_register[x] == chip8->variable_register[y]) {
+    if (chip8->V[x] == chip8->V[y]) {
         chip8->pc += 2;
     }
 }
 
 void skip_if_xy_neq(Chip8 *chip8, uint8_t x, uint8_t y) {
-    if (chip8->variable_register[x] != chip8->variable_register[y]) {
+    if (chip8->V[x] != chip8->V[y]) {
         chip8->pc += 2;
     }
 }
@@ -125,64 +125,64 @@ void call_subrtn(Chip8 *chip8, uint16_t subrtn_addr) {
 }
 
 void set_xy(Chip8 *chip8, uint8_t x, uint8_t y) {
-    chip8->variable_register[x] = chip8->variable_register[y];
+    chip8->V[x] = chip8->V[y];
 }
 
 void xy_or(Chip8 *chip8, uint8_t x, uint8_t y) {
-    chip8->variable_register[x] |= chip8->variable_register[y];
+    chip8->V[x] |= chip8->V[y];
 }
 
 void xy_and(Chip8 *chip8, uint8_t x, uint8_t y) {
-    chip8->variable_register[x] &= chip8->variable_register[y];
+    chip8->V[x] &= chip8->V[y];
 }
 
 void xy_xor(Chip8 *chip8, uint8_t x, uint8_t y) {
-    chip8->variable_register[x] ^= chip8->variable_register[y];
+    chip8->V[x] ^= chip8->V[y];
 }
 
 void xy_add(Chip8 *chip8, uint8_t x, uint8_t y) {
-    uint8_t vx = chip8->variable_register[x];
-    uint8_t vy = chip8->variable_register[y];
+    uint8_t vx = chip8->V[x];
+    uint8_t vy = chip8->V[y];
     if (0xFF - vy < vx) {
-        chip8->variable_register[0xF] = 1;
+        chip8->V[0xF] = 1;
     } else {
-        chip8->variable_register[0xF] = 0;
+        chip8->V[0xF] = 0;
     }
-    chip8->variable_register[x] += chip8->variable_register[y];
+    chip8->V[x] += chip8->V[y];
 }
 
 void xy_x_subtract_y(Chip8 *chip8, uint8_t x, uint8_t y) {
-    uint8_t vx = chip8->variable_register[x];
-    uint8_t vy = chip8->variable_register[y];
+    uint8_t vx = chip8->V[x];
+    uint8_t vy = chip8->V[y];
     if (vx > vy) {
-        chip8->variable_register[0xF] = 1;
+        chip8->V[0xF] = 1;
     } else {
-        chip8->variable_register[0xF] = 0;
+        chip8->V[0xF] = 0;
     }
-    chip8->variable_register[x] = vx - vy;
+    chip8->V[x] = vx - vy;
 }
 
 void xy_y_subtract_x(Chip8 *chip8, uint8_t x, uint8_t y) {
-    uint8_t vx = chip8->variable_register[x];
-    uint8_t vy = chip8->variable_register[y];
+    uint8_t vx = chip8->V[x];
+    uint8_t vy = chip8->V[y];
     if (vy > vx) {
-        chip8->variable_register[0xF] = 1;
+        chip8->V[0xF] = 1;
     } else {
-        chip8->variable_register[0xF] = 0;
+        chip8->V[0xF] = 0;
     }
-    chip8->variable_register[x] = vy - vx;
+    chip8->V[x] = vy - vx;
 }
 
 void xy_shift_left(Chip8 *chip8, uint8_t x, uint8_t y) {
     // TODO: set a toggle for this function
-    chip8->variable_register[x] = chip8->variable_register[y];
-    chip8->variable_register[0xF] = (chip8->variable_register[x] & 0x80) ? 1 : 0;
-    chip8->variable_register[0xF] <<= 1;
+    // chip8->V[x] = chip8->V[y];
+    chip8->V[0xF] = (chip8->V[x] & 0x80) ? 1 : 0;
+    chip8->V[x] <<= 1;
 }
 
 void xy_shift_right(Chip8 *chip8, uint8_t x, uint8_t y) {
     // TODO: set a toggle for this function
-    chip8->variable_register[x] = chip8->variable_register[y];
-    chip8->variable_register[0xF] = (chip8->variable_register[x] & 0x01) ? 1 : 0;
-    chip8->variable_register[0xF] >>= 1;
+    // chip8->V[x] = chip8->V[y];
+    chip8->V[0xF] = (chip8->V[x] & 0x01) ? 1 : 0;
+    chip8->V[x] >>= 1;
 }

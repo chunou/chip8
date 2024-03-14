@@ -24,7 +24,7 @@ typedef struct {
     uint8_t stack_ptr;
     uint8_t delay_timer;
     uint8_t sound_timer;
-    uint8_t variable_register[VARIABLE_REGISTER_SIZE];
+    uint8_t V[VARIABLE_REGISTER_SIZE];
     uint16_t pc;
     uint16_t I;
 
