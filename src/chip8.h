@@ -16,7 +16,8 @@
 
 #define VARIABLE_REGISTER_SIZE 16
 
-typedef struct {
+typedef struct
+{
     uint8_t memory[RAM_SIZE];
     uint16_t index_register;
     uint8_t screen[SCREEN_WIDTH][SCREEN_HEIGHT];
@@ -62,5 +63,6 @@ void xy_y_subtract_x(Chip8 *chip8, uint8_t x, uint8_t y);
 // 8XYE
 void xy_shift_left(Chip8 *chip8, uint8_t x, uint8_t y);
 
+// FX65
 
 #endif // CHIP8_H__

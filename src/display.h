@@ -6,12 +6,13 @@
 
 #include <SDL.h>
 
-typedef struct {
+typedef struct
+{
     SDL_Renderer *renderer;
     SDL_Window *window;
 } Display;
 
-void init_display(Display* display);
+void init_display(Display *display);
 
 void compose_scene(Display *display, uint8_t *screen, int rows, int cols);
 
