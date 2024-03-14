@@ -30,7 +30,6 @@ void init_chip8(Chip8 *chip8)
     {
         chip8->memory[i] = 0;
     }
-    chip8->index_register = 0;
     clear_screen(chip8);
     for (size_t i = 0; i < STACK_SIZE; ++i)
     {
