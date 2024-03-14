@@ -239,7 +239,7 @@ void write_registers_to_memory(Chip8 *chip8, uint8_t x)
 {
     for (size_t i = 0; i <= x; ++i)
     {
-        chip8->V[i] = chip8->memory[chip8->I + i];
+        chip8->memory[chip8->I + i] = chip8->V[i];
     }
 }
 
@@ -247,6 +247,6 @@ void write_memory_to_registers(Chip8 *chip8, uint8_t x)
 {
     for (size_t i = 0; i <= x; ++i)
     {
-        chip8->memory[chip8->I + i] = chip8->V[i];
+        chip8->V[i] = chip8->memory[chip8->I + i];
     }
 }

@@ -10,7 +10,10 @@
 
 int main(int argc, char *argv[])
 {
-
+    if (argc < 2) {
+        printf("Usage: %s rom-path\n", argv[0]);
+        exit(1);
+    }
     Chip8 chip8;
     init_chip8(&chip8);
     chip8.pc = PROGRAM_START;
@@ -20,7 +23,7 @@ int main(int argc, char *argv[])
     SDL_Event e;
 
     FILE *fptr;
-    fptr = fopen("roms/3-corax+.ch8", "rd");
+    fptr = fopen("roms/4-flags.ch8", "rd");
     while (!feof(fptr))
     {
         size_t r =
@@ -47,7 +50,7 @@ int main(int argc, char *argv[])
         uint8_t nibble1 = (instruction & (nibble_mask << 8)) >> 8;
         uint8_t nibble2 = (instruction & (nibble_mask << 4)) >> 4;
         uint8_t nibble3 = (instruction & (nibble_mask));
-        printf("Found instruction %04X\n", instruction);
+        // printf("Found instruction %04X\n", instruction);
 
         // Decode & execute
         switch (nibble0)
@@ -55,7 +58,7 @@ int main(int argc, char *argv[])
         case 0x0:
             if (instruction == 0x00E0)
             {
-                printf("Clearing screen\n");
+                // printf("Clearing screen\n");
                 clear_screen(&chip8);
             }
             else if (instruction == 0x00EE)
@@ -68,7 +71,7 @@ int main(int argc, char *argv[])
         {
             uint16_t loc = instruction & 0b0000111111111111;
             chip8.pc = loc;
-            printf("Jumping to location: %04X\n", loc);
+            // printf("Jumping to location: %04X\n", loc);
         }
         break;
 
@@ -104,7 +107,7 @@ int main(int argc, char *argv[])
         {
             uint8_t register_index = nibble1;
             uint8_t register_value = (nibble2 << 4) | nibble3;
-            printf("Setting register V%X to %02X\n", register_index, register_value);
+            // printf("Setting register V%X to %02X\n", register_index, register_value);
             chip8.V[register_index] = register_value;
         }
         break;
@@ -168,13 +171,49 @@ int main(int argc, char *argv[])
         break;
 
         case 0xD:
-            printf("Calling `draw_to_display`\n");
-            printf("Register V%X = %02X, Register V%X = %02X, Height = %d\n\n",
-                   nibble1, chip8.V[nibble1], nibble2, chip8.V[nibble2], nibble3);
+            // printf("Calling `draw_to_display`\n");
+            // printf("Register V%X = %02X, Register V%X = %02X, Height = %d\n\n",
+                //    nibble1, chip8.V[nibble1], nibble2, chip8.V[nibble2], nibble3);
             draw_to_display(&chip8, nibble1, nibble2, nibble3);
             break;
 
         case 0xF:
+            switch (nibble2)
+            {
+
+            
+            case 0x2:
+            {
+                uint8_t font_char = chip8.V[nibble1] & 0x0F;
+                chip8.I = FONTSET_OFFSET + 4 * font_char;
+            }
+            break;
+
+            case 0x3:
+            {
+                uint8_t digit0 = chip8.V[nibble1] / 100;
+                uint8_t digit1 = (chip8.V[nibble1] / 10) % 10;
+                uint8_t digit2 = chip8.V[nibble1] % 10;
+                printf("VX = %d, d0 = %d, d1 = %d, d2 = %d\n", chip8.V[nibble1], digit0, digit1, digit2);
+                chip8.memory[chip8.I] = digit0;
+                chip8.memory[chip8.I+1] = digit1;
+                chip8.memory[chip8.I+2] = digit2;
+            }
+            break;
+            case 0x5:
+                printf("Found instruction %04X\n", instruction);
+                write_registers_to_memory(&chip8, nibble1);
+                break;
+            
+            case 0x6:
+                printf("Found instruction %04X\n", instruction);
+                write_memory_to_registers(&chip8, nibble1);
+                break;
+
+            default:
+                break;
+            }
+            break;
 
         default:
             printf("Fallthrough on instruction %04X\n", instruction);
@@ -190,7 +229,7 @@ int main(int argc, char *argv[])
         SDL_RenderPresent(display.renderer);
 
         // Maybe wait here?
-        usleep(1000000 / 10);
+        usleep(1000000 / 30);
     }
 
     // Cleanup

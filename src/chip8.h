@@ -63,6 +63,10 @@ void xy_y_subtract_x(Chip8 *chip8, uint8_t x, uint8_t y);
 // 8XYE
 void xy_shift_left(Chip8 *chip8, uint8_t x, uint8_t y);
 
+// FX55
+void write_registers_to_memory(Chip8 *chip8, uint8_t x);
 // FX65
+void write_memory_to_registers(Chip8 *chip8, uint8_t x);
+
 
 #endif // CHIP8_H__
