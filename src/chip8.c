@@ -32,7 +32,11 @@ size_t load_rom(char *rom_path, Chip8 *chip8) {
         printf("Could not open file %s in load_rom\n", rom_path);
         exit(1);
     }
-    size_t program_size = fread(chip8->ram + 0x200, sizeof(chip8->ram[0]), sizeof(chip8->ram) - 0x200, fptr);
+    size_t program_size = fread(
+        chip8->ram + 0x200,
+        sizeof(chip8->ram[0]),
+        sizeof(chip8->ram) - 0x200,
+        fptr);
     printf("Read rom %s of size %lu bytes\n", rom_path, program_size);
     fclose(fptr);
     return program_size;
