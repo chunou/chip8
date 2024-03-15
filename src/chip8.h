@@ -29,9 +29,9 @@ typedef struct {
 
 } Chip8;
 
-size_t load_rom(char *rom_path, Chip8 *chip8);
-
 void init_chip8(Chip8 *chip8);
+
+size_t load_rom(char *rom_path, Chip8 *chip8);
 
 // 00E0
 int clear_screen(Chip8 *chip8);

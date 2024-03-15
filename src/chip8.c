@@ -24,6 +24,24 @@ const uint8_t FONT[FONTSET_SIZE] = {
     0xF0, 0x80, 0xF0, 0x80, 0x80  // F
 };
 
+void init_chip8(Chip8 *chip8) {
+    /*
+    * Zeros out
+    *     ram
+    *     stack
+    *     stack pointer
+    *     screen
+    *     delay and sound timers
+    *     variable registers
+    *     memory pointer
+    * 
+    * Sets program counter to PROGRAM_START (0x200)
+    */
+    for (size_t i=0; i<RAM_SIZE; ++i) {
+        chip8->ram[i] = 0;
+    }
+}
+
 size_t load_rom(char *rom_path, Chip8 *chip8) {
     // Loads a chip8 rom into memory
     // If the file path doesn't exist, exit
@@ -43,32 +61,32 @@ size_t load_rom(char *rom_path, Chip8 *chip8) {
 
 }
 
-void init_chip8(Chip8 *chip8)
-{
-    for (size_t i = 0; i < RAM_SIZE; ++i)
-    {
-        chip8->ram[i] = 0;
-    }
-    clear_screen(chip8);
-    for (size_t i = 0; i < STACK_SIZE; ++i)
-    {
-        chip8->stack[i] = 0;
-    }
-    chip8->delay_timer = 0;
-    chip8->sound_timer = 0;
-    for (size_t i = 0; i < VARIABLE_REGISTER_SIZE; ++i)
-    {
-        chip8->V[i] = 0;
-    }
-    chip8->I = 0;
-    chip8->pc = 0;
+// void init_chip8(Chip8 *chip8)
+// {
+//     for (size_t i = 0; i < RAM_SIZE; ++i)
+//     {
+//         chip8->ram[i] = 0;
+//     }
+//     clear_screen(chip8);
+//     for (size_t i = 0; i < STACK_SIZE; ++i)
+//     {
+//         chip8->stack[i] = 0;
+//     }
+//     chip8->delay_timer = 0;
+//     chip8->sound_timer = 0;
+//     for (size_t i = 0; i < VARIABLE_REGISTER_SIZE; ++i)
+//     {
+//         chip8->V[i] = 0;
+//     }
+//     chip8->I = 0;
+//     chip8->pc = 0;
 
-    // Load font
-    for (size_t i = 0; i < FONTSET_SIZE; ++i)
-    {
-        chip8->ram[i + FONTSET_OFFSET] = FONT[i];
-    }
-}
+//     // Load font
+//     for (size_t i = 0; i < FONTSET_SIZE; ++i)
+//     {
+//         chip8->ram[i + FONTSET_OFFSET] = FONT[i];
+//     }
+// }
 
 int clear_screen(Chip8 *chip8)
 {
