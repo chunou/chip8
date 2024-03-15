@@ -16,8 +16,7 @@
 
 #define VARIABLE_REGISTER_SIZE 16
 
-typedef struct
-{
+typedef struct {
     uint8_t memory[RAM_SIZE];
     uint8_t screen[SCREEN_WIDTH][SCREEN_HEIGHT];
     uint16_t stack[STACK_SIZE];
@@ -30,8 +29,17 @@ typedef struct
 
 } Chip8;
 
+size_t load_rom(char *rom_path, Chip8 *chip8);
+
 void init_chip8(Chip8 *chip8);
+
+// 00E0
 int clear_screen(Chip8 *chip8);
+// 1NNN
+// 6XNN
+// 7XNN
+// ANNN
+// DXYN
 uint16_t fetch_instruction(Chip8 *chip8);
 void draw_to_display(Chip8 *chip8, uint8_t vx, uint8_t vy, uint8_t n);
 

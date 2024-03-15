@@ -24,6 +24,21 @@ const uint8_t FONT[FONTSET_SIZE] = {
     0xF0, 0x80, 0xF0, 0x80, 0x80  // F
 };
 
+size_t load_rom(char *rom_path, Chip8 *chip8) {
+    // Loads a chip8 rom into memory
+    // If the file path doesn't exist, exit
+    FILE *fptr = fopen(rom_path, "rb");
+    if (fptr == NULL) {
+        printf("Could not open file %s in load_rom\n", rom_path);
+        exit(1);
+    }
+    size_t program_size = fread(chip8->memory + 0x200, sizeof(chip8->memory[0]), sizeof(chip8->memory) - 0x200, fptr);
+    printf("Read rom %s of size %lu bytes\n", rom_path, program_size);
+    fclose(fptr);
+    return program_size;
+
+}
+
 void init_chip8(Chip8 *chip8)
 {
     for (size_t i = 0; i < RAM_SIZE; ++i)
