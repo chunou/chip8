@@ -1,5 +1,6 @@
-# Chip8 Executable
+# Chip8 executable and tests
 chip8
+tests
 
 # Editor settings
 .vscode/
