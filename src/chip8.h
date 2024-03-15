@@ -17,7 +17,7 @@
 #define VARIABLE_REGISTER_SIZE 16
 
 typedef struct {
-    uint8_t memory[RAM_SIZE];
+    uint8_t ram[RAM_SIZE];
     uint8_t screen[SCREEN_WIDTH][SCREEN_HEIGHT];
     uint16_t stack[STACK_SIZE];
     uint8_t stack_ptr;

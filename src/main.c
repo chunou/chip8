@@ -178,9 +178,9 @@ int main(int argc, char *argv[]) {
                 uint8_t digit0 = chip8.V[nibble1] / 100;
                 uint8_t digit1 = (chip8.V[nibble1] / 10) % 10;
                 uint8_t digit2 = chip8.V[nibble1] % 10;
-                chip8.memory[chip8.I] = digit0;
-                chip8.memory[chip8.I+1] = digit1;
-                chip8.memory[chip8.I+2] = digit2;
+                chip8.ram[chip8.I] = digit0;
+                chip8.ram[chip8.I+1] = digit1;
+                chip8.ram[chip8.I+2] = digit2;
             }
             break;
             case 0x5:

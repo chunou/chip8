@@ -32,7 +32,7 @@ size_t load_rom(char *rom_path, Chip8 *chip8) {
         printf("Could not open file %s in load_rom\n", rom_path);
         exit(1);
     }
-    size_t program_size = fread(chip8->memory + 0x200, sizeof(chip8->memory[0]), sizeof(chip8->memory) - 0x200, fptr);
+    size_t program_size = fread(chip8->ram + 0x200, sizeof(chip8->ram[0]), sizeof(chip8->ram) - 0x200, fptr);
     printf("Read rom %s of size %lu bytes\n", rom_path, program_size);
     fclose(fptr);
     return program_size;
@@ -43,7 +43,7 @@ void init_chip8(Chip8 *chip8)
 {
     for (size_t i = 0; i < RAM_SIZE; ++i)
     {
-        chip8->memory[i] = 0;
+        chip8->ram[i] = 0;
     }
     clear_screen(chip8);
     for (size_t i = 0; i < STACK_SIZE; ++i)
@@ -62,7 +62,7 @@ void init_chip8(Chip8 *chip8)
     // Load font
     for (size_t i = 0; i < FONTSET_SIZE; ++i)
     {
-        chip8->memory[i + FONTSET_OFFSET] = FONT[i];
+        chip8->ram[i + FONTSET_OFFSET] = FONT[i];
     }
 }
 
@@ -84,8 +84,8 @@ uint16_t fetch_instruction(Chip8 *chip8)
     {
         exit(1);
     }
-    uint8_t lower_byte = chip8->memory[chip8->pc++];
-    uint8_t upper_byte = chip8->memory[chip8->pc++];
+    uint8_t lower_byte = chip8->ram[chip8->pc++];
+    uint8_t upper_byte = chip8->ram[chip8->pc++];
     uint16_t instruction = (((uint16_t)lower_byte) << 8) | upper_byte;
     return instruction;
 }
@@ -99,7 +99,7 @@ void draw_to_display(Chip8 *chip8, uint8_t vx, uint8_t vy, uint8_t n)
     {
         if (row + yloc >= SCREEN_HEIGHT)
             break;
-        uint8_t sprite_row = chip8->memory[chip8->I + row];
+        uint8_t sprite_row = chip8->ram[chip8->I + row];
         uint8_t mask = 0x80;
         for (int col = 0; col < 8; ++col)
         {
@@ -253,7 +253,7 @@ void write_registers_to_memory(Chip8 *chip8, uint8_t x)
 {
     for (size_t i = 0; i <= x; ++i)
     {
-        chip8->memory[chip8->I + i] = chip8->V[i];
+        chip8->ram[chip8->I + i] = chip8->V[i];
     }
 }
 
@@ -261,6 +261,6 @@ void write_memory_to_registers(Chip8 *chip8, uint8_t x)
 {
     for (size_t i = 0; i <= x; ++i)
     {
-        chip8->V[i] = chip8->memory[chip8->I + i];
+        chip8->V[i] = chip8->ram[chip8->I + i];
     }
 }
