@@ -14,7 +14,7 @@
 #define SCREEN_WIDTH 64
 #define SCREEN_HEIGHT 32
 
-#define VARIABLE_REGISTER_SIZE 16
+#define V_REG_SIZE 16
 
 typedef struct {
     uint8_t ram[RAM_SIZE];
@@ -23,7 +23,7 @@ typedef struct {
     uint8_t screen[SCREEN_WIDTH][SCREEN_HEIGHT];
     uint8_t delay_timer;
     uint8_t sound_timer;
-    uint8_t V[VARIABLE_REGISTER_SIZE];
+    uint8_t V[V_REG_SIZE];
     uint16_t pc;
     uint16_t I;
 

@@ -27,6 +27,13 @@ void test_init_chip8() {
     fflush(stdout);
     assert(chip8.stack_ptr == 0);
     printf("ok\n");
+
+    printf("  checking v-registers are cleared... ");
+    fflush(stdout);
+    for (size_t i=0; i<V_REG_SIZE; ++i) {
+        assert(chip8.V[i] == 0);
+    }
+    printf("ok\n");
 }
 
 int main(int argc, char *argv[]) {
