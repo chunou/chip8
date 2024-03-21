@@ -25,18 +25,6 @@ const uint8_t FONT[FONTSET_SIZE] = {
 };
 
 void init_chip8(Chip8 *chip8) {
-    /*
-    * Zeros out
-    *     ram
-    *     stack
-    *     stack pointer
-    *     screen
-    *     delay and sound timers
-    *     variable registers
-    *     memory pointer
-    * 
-    * Sets program counter to PROGRAM_START (0x200)
-    */
     for (size_t i=0; i<RAM_SIZE; ++i) {
         chip8->ram[i] = 0;
     }
@@ -46,6 +34,15 @@ void init_chip8(Chip8 *chip8) {
     chip8->stack_ptr = 0;
     for (size_t i=0; i<V_REG_SIZE; ++i) {
         chip8->V[i] = 0;
+    }
+    chip8->delay_timer = 0;
+    chip8->sound_timer = 0;
+    chip8->pc = 0x200;
+    chip8->I = 0;
+    for (size_t i=0; i<SCREEN_WIDTH; ++i) {
+        for (size_t j=0; j<SCREEN_HEIGHT; ++j) {
+            chip8->screen[i][j] = 0;
+        }
     }
 }
 

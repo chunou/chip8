@@ -34,6 +34,35 @@ void test_init_chip8() {
         assert(chip8.V[i] == 0);
     }
     printf("ok\n");
+
+    printf("  checking delay timer is set to 0... ");
+    fflush(stdout);
+    assert(chip8.delay_timer == 0);
+    printf("ok\n");
+
+    printf("  checking sound timer is set to 0... ");
+    fflush(stdout);
+    assert(chip8.sound_timer == 0);
+    printf("ok\n");
+
+    printf("  checking pc set to 0x200... ");
+    fflush(stdout);
+    assert(chip8.pc == 0x200);
+    printf("ok\n");
+
+    printf("  checking index register is cleared... ");
+    fflush(stdout);
+    assert(chip8.I == 0);
+    printf("ok\n");
+
+    printf("  checking screen is clear... ");
+    fflush(stdout);
+    for (size_t i=0; i<SCREEN_WIDTH; ++i) {
+        for (size_t j=0; j<SCREEN_HEIGHT; ++j) {
+            assert(chip8.screen[i][j] == 0);
+        }
+    }
+    printf("ok\n");
 }
 
 int main(int argc, char *argv[]) {
