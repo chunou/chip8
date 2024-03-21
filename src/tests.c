@@ -22,6 +22,11 @@ void test_init_chip8() {
         assert(chip8.stack[i] == 0);
     }
     printf("ok\n");
+
+    printf("  checking stack pointer is cleared... ");
+    fflush(stdout);
+    assert(chip8.stack_ptr == 0);
+    printf("ok\n");
 }
 
 int main(int argc, char *argv[]) {

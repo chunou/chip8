@@ -43,6 +43,8 @@ void init_chip8(Chip8 *chip8) {
     for (size_t i=0; i<STACK_SIZE; ++i) {
         chip8->stack[i] = 0;
     }
+    chip8->stack_ptr = 0;
+    
 }
 
 size_t load_rom(char *rom_path, Chip8 *chip8) {
